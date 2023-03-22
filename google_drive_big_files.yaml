@@ -1,0 +1,84 @@
+swagger: '2.0'
+info:
+  title: GoogleDriveBigFiles
+  description: Retrieve the 100 largest files from Google Drive
+  version: 1.0.0
+host: www.googleapis.com
+schemes:
+  - https
+basePath: /drive/v3
+produces:
+  - application/json
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: accessCode
+    authorizationUrl: 'https://accounts.google.com/o/oauth2/v2/auth'
+    tokenUrl: 'https://oauth2.googleapis.com/token'
+    scopes:
+      'https://www.googleapis.com/auth/drive.readonly': Read access to your Google Drive
+security:
+  - oauth2:
+      - 'https://www.googleapis.com/auth/drive.readonly'
+paths:
+  /files:
+    get:
+      summary: Get 100 largest files
+      description: Retrieve the 100 largest files from Google Drive
+      operationId: Get100LargestFiles
+      parameters:
+        - name: pageSize
+          in: query
+          description: Number of files to return
+          required: true
+          type: integer
+          default: 100
+        - name: fields
+          in: query
+          description: Fields to return for each file
+          required: true
+          type: string
+          default: 'nextPageToken, files(id, name, mimeType, size, createdTime)'
+        - name: orderBy
+          in: query
+          description: Sort files by size in descending order
+          required: true
+          type: string
+          default: 'quotaBytesUsed desc'
+      responses:
+        '200':
+          description: A list of the 100 largest files
+          schema:
+            type: object
+            properties:
+              nextPageToken:
+                type: string
+              files:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    mimeType:
+                      type: string
+                    size:
+                      type: string
+                    createdTime:
+                      type: string
+        default:
+          description: Error
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                  message:
+                    type: string
+                  status:
+                    type: string
